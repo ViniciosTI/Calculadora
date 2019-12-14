@@ -4,32 +4,34 @@ import Button from "./componentes/button";
 
 class App extends React.Component {
   state = {
-    calc: "",
+    calc: [],
     num: "0"
   }
   getNumero(val) {// 0...9
     let st = this.state
-    if (st.num == "0" && val != ",") st.num = ""
-    if (!st.num.includes(",") || (st.num.includes(",") && val != ",")) this.setValor(val)
+    if (st.num === "0" && val !== ",") st.num = ""
+    if (!st.num.includes(",") || (st.num.includes(",") && val !== ",")) this.setValor(val)
   }
   getOperacao(val) { // + - * / %
     let st = this.state
-    if(!Number.isInteger(st.calc.substring(st.calc.length-1)) && st.num != "0"){
-      let c = st.num + val
-      this.setState({ calc: st.calc + c })
-      this.setState({ num: "0" })
-    }
+    let aux = st.calc
+    if (st.num !== "0") aux.push(st.num)
+    if (Number.isInteger(parseInt(st.calc[st.calc.length - 1]))) aux.push(val)
+    this.setState({
+      calc: aux,
+      num: "0"
+    })
   }
   mudaSinal() { // ±
     let st = this.state
-    if (st.num != "0") {
+    if (st.num !== "0") {
       if (st.num.includes("-")) this.setState({ num: st.num.substring(1) })
       if (!st.num.includes("-")) this.setState({ num: "-" + st.num })
     }
   }
   limpaConteudo() { // ac
     this.setState({
-      calc: "",
+      calc: [],
       num: "0"
     })
   }
@@ -38,14 +40,36 @@ class App extends React.Component {
       num: this.state.num + val
     })
   }
+  calcula() {
+    fetch("http://localhost:8000/api", {
+      method: 'POST',
+      body: JSON.stringify(this.montaString())
+    })
+      .then(res => res.json())
+      .then(res => console.log(res))
+  }
+  montaString() {
+    let st = this.state
+    let r = ""
+    for (let i in st.calc) {
+      r += " " + st.calc[i]
+    }
+    if (r.trim() !== "")
+      return r.trim()
+    if (r.trim() === "")
+      return st.num
+  }
+
 
   render() {
-    const { num, calc } = this.state
+    const { num } = this.state
     return (
       <div className={"py-12 items-center"}>
         <div className="flex flex-col mx-auto">
           <input style={{ paddingRight: "25%" }}
-            className="text-right w-full text-2xl md:text-3xl lg:text-4xl bg-transparent text-gray-600" type="text" disabled value={calc} />
+            className="text-right w-full text-2xl md:text-3xl lg:text-4xl bg-transparent text-gray-600" type="text" disabled value={
+              this.montaString()
+            } />
         </div>
         <div className="flex flex-col mx-auto ">
           <input style={{ paddingRight: "25%" }}
@@ -115,7 +139,7 @@ class App extends React.Component {
             <Button getValor={() => this.getNumero(",")}>
               ,
         </Button>
-            <Button getValor={() => this.calcula("=")} cor="amarelo">
+            <Button getValor={() => this.calcula()} cor="amarelo">
               =
         </Button>
           </div>
