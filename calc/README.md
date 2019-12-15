@@ -1,3 +1,17 @@
+## Projeto calculadora
+
+Para funcionar precisa do npm, utilizei a versão 6.9.0 do npm
+
+comandos cmd:
+
+cd ~/Calculadora/calc
+
+npm install
+
+npm start
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
