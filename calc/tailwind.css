@@ -1,7 +1,7 @@
 
 @tailwind base;
 body, html{
-    @apply bg-gray-900;
+    @apply bg-black;
   }
 @tailwind components;
 @tailwind utilities;

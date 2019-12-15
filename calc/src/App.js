@@ -135,7 +135,6 @@ class App extends React.Component {
       o[i] = st.calc[i]
     }
     o[st.calc.length] = st.num
-    console.log(o)
     return o
   }
 
