@@ -11,15 +11,16 @@ class App extends React.Component {
   /*
     val -> item novo que será ou não colocado no this.state.num
   */
-  getNumero(val) {// 0...9
+  getNumero(val) {// 0...9 ,
     let st = this.state
-    if ((st.num === "0" && val !== ",") || st.f === true) {
-      st.num = ""
+    if (st.num === "0" || st.f === true) {
+      if(val !== ",") st.num = ""
       st.f = false
     }
     if (!Number.isInteger(parseInt(st.calc[st.calc.length - 1])) &&
       (!st.num.includes(",") || (st.num.includes(",") && val !== ","))) this.setValor(val)
     if (Number.isInteger(parseInt(st.calc[st.calc.length - 1]))) this.mudaUltimoValor(val)
+    
   }
     /*
   muda o ultimo valor já colocado no calculo
@@ -89,7 +90,7 @@ class App extends React.Component {
       body: JSON.stringify(this.montaObjeto())
     })
       .then(res => res.json())
-      .then(res => this.setState({ calc: [], num: res.toString(), f: true }))
+      .then(res => this.setState({ calc: [], num: res.toString().replace(".", ","), f: true }))
   }
   /*
     envia os dados para a api resolver a porcentagem
@@ -103,10 +104,10 @@ class App extends React.Component {
       .then(res => res.json())
       .then(res => {
         let c = this.state.calc
-        c.push(res)
+        c.push(res.toString().replace(".", ","))
         this.setState({
           calc: c,
-          num: res.toString(),
+          num: res.toString().replace(".", ","),
           f: true
         })
       })
