@@ -134,7 +134,7 @@ class App extends React.Component {
     for (let i in st.calc) {
       o[i] = st.calc[i]
     }
-    if (st.num != "0") o[st.calc.length] = st.num
+    o[st.calc.length] = st.num
     console.log(o)
     return o
   }
