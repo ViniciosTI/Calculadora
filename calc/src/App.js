@@ -17,7 +17,17 @@ class App extends React.Component {
       st.num = ""
       st.f = false
     }
-    if (!st.num.includes(",") || (st.num.includes(",") && val !== ",")) this.setValor(val)
+    if (!Number.isInteger(parseInt(st.calc[st.calc.length - 1])) &&
+      (!st.num.includes(",") || (st.num.includes(",") && val !== ","))) this.setValor(val)
+    if (Number.isInteger(parseInt(st.calc[st.calc.length - 1]))) this.mudaUltimoValor(val)
+  }
+    /*
+  muda o ultimo valor já colocado no calculo
+   */
+  mudaUltimoValor(val) {
+    let c = this.state.calc
+    c.pop()
+    this.setState({ calc: c, num: val })
   }
   /*
     val -> item que servirá de operado para o calculo
@@ -25,13 +35,23 @@ class App extends React.Component {
   getOperacao(val) { // + - * / %
     let st = this.state
     let aux = st.calc
-    if (st.num !== "0") aux.push(st.num)
+    if (st.num !== "0" && !Number.isInteger(parseInt(st.calc[st.calc.length - 1]))) aux.push(st.num)
     if (Number.isInteger(parseInt(st.calc[st.calc.length - 1]))) aux.push(val)
+    if (!Number.isInteger(parseInt(st.calc[st.calc.length - 1]))) this.mudaUltimoOperador(val)
     this.setState({
       calc: aux,
       num: "0",
       f: false
     })
+  }
+  /*
+  muda o ultimo operador já colocado no calculo
+   */
+  mudaUltimoOperador(val) {
+    let c = this.state.calc
+    c.pop()
+    c.push(val)
+    this.setState({ calc: c, num: val })
   }
   /*
     troca o sinal do valor this.state.num
@@ -75,12 +95,21 @@ class App extends React.Component {
     envia os dados para a api resolver a porcentagem
   */
   porcentagem() {
+    let st = this.state
     fetch("http://localhost:8000/api/porcentagem", {
       method: 'POST',
       body: JSON.stringify(this.montaObjeto())
     })
       .then(res => res.json())
-      .then(res => console.log(res))
+      .then(res => {
+        let c = this.state.calc
+        c.push(res)
+        this.setState({
+          calc: c,
+          num: res.toString(),
+          f: true
+        })
+      })
   }
   /*
     return -> monta uma string com a lista do state this.state.calc
@@ -105,7 +134,8 @@ class App extends React.Component {
     for (let i in st.calc) {
       o[i] = st.calc[i]
     }
-    o[st.calc.length] = this.state.num
+    if (st.num != "0") o[st.calc.length] = st.num
+    console.log(o)
     return o
   }
 
