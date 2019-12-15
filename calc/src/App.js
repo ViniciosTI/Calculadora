@@ -96,7 +96,6 @@ class App extends React.Component {
     envia os dados para a api resolver a porcentagem
   */
   porcentagem() {
-    let st = this.state
     fetch("http://localhost:8000/api/porcentagem", {
       method: 'POST',
       body: JSON.stringify(this.montaObjeto())
