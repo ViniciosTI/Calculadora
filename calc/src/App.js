@@ -8,14 +8,20 @@ class App extends React.Component {
     num: "0",
     f: true
   }
+  /*
+    val -> item novo que será ou não colocado no this.state.num
+  */
   getNumero(val) {// 0...9
     let st = this.state
-    if (st.num === "0" && val !== "," || st.f === true) {
+    if ((st.num === "0" && val !== ",") || st.f === true) {
       st.num = ""
       st.f = false
     }
     if (!st.num.includes(",") || (st.num.includes(",") && val !== ",")) this.setValor(val)
   }
+  /*
+    val -> item que servirá de operado para o calculo
+  */
   getOperacao(val) { // + - * / %
     let st = this.state
     let aux = st.calc
@@ -27,6 +33,9 @@ class App extends React.Component {
       f: false
     })
   }
+  /*
+    troca o sinal do valor this.state.num
+  */
   mudaSinal() { // ±
     let st = this.state
     if (st.num !== "0") {
@@ -34,25 +43,48 @@ class App extends React.Component {
       if (!st.num.includes("-")) this.setState({ num: "-" + st.num })
     }
   }
+  /*
+    limpa os valores de this.state.calc e this.state.num
+  */
   limpaConteudo() { // ac
     this.setState({
       calc: [],
       num: "0"
     })
   }
+  /*
+    val -> item que será colocado ao valor de this.state.num
+  */
   setValor(val) {
     this.setState({
       num: this.state.num + val
     })
   }
+  /*
+    envia os dados para a api resolver os calculos
+  */
   calcula() {
     fetch("http://localhost:8000/api/calcular", {
       method: 'POST',
       body: JSON.stringify(this.montaObjeto())
     })
       .then(res => res.json())
-      .then(res => this.setState({ calc: [], num: res.toString(), f: true}))
+      .then(res => this.setState({ calc: [], num: res.toString(), f: true }))
   }
+  /*
+    envia os dados para a api resolver a porcentagem
+  */
+  porcentagem() {
+    fetch("http://localhost:8000/api/porcentagem", {
+      method: 'POST',
+      body: JSON.stringify(this.montaObjeto())
+    })
+      .then(res => res.json())
+      .then(res => console.log(res))
+  }
+  /*
+    return -> monta uma string com a lista do state this.state.calc
+  */
   montaString() {
     let st = this.state
     let r = ""
@@ -64,6 +96,9 @@ class App extends React.Component {
     if (r.trim() === "")
       return st.num
   }
+  /*
+    return -> monta um objeto com a lista do state this.state.calc
+  */
   montaObjeto() {
     let st = this.state
     let o = {}
@@ -96,7 +131,7 @@ class App extends React.Component {
             <Button getValor={() => this.mudaSinal()} cor="cinza">
               ±
         </Button>
-            <Button getValor={() => this.getOperacao("%")} cor="cinza">
+            <Button getValor={() => this.porcentagem()} cor="cinza">
               %
         </Button>
             <Button getValor={() => this.getOperacao("/")} cor="amarelo">
