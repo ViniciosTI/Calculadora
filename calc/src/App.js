@@ -5,11 +5,15 @@ import Button from "./componentes/button";
 class App extends React.Component {
   state = {
     calc: [],
-    num: "0"
+    num: "0",
+    f: true
   }
   getNumero(val) {// 0...9
     let st = this.state
-    if (st.num === "0" && val !== ",") st.num = ""
+    if (st.num === "0" && val !== "," || st.f === true) {
+      st.num = ""
+      st.f = false
+    }
     if (!st.num.includes(",") || (st.num.includes(",") && val !== ",")) this.setValor(val)
   }
   getOperacao(val) { // + - * / %
@@ -19,7 +23,8 @@ class App extends React.Component {
     if (Number.isInteger(parseInt(st.calc[st.calc.length - 1]))) aux.push(val)
     this.setState({
       calc: aux,
-      num: "0"
+      num: "0",
+      f: false
     })
   }
   mudaSinal() { // ±
@@ -41,12 +46,12 @@ class App extends React.Component {
     })
   }
   calcula() {
-    fetch("http://localhost:8000/api", {
+    fetch("http://localhost:8000/api/calcular", {
       method: 'POST',
-      body: JSON.stringify(this.montaString())
+      body: JSON.stringify(this.montaObjeto())
     })
       .then(res => res.json())
-      .then(res => console.log(res))
+      .then(res => this.setState({ calc: [], num: res.toString(), f: true}))
   }
   montaString() {
     let st = this.state
@@ -59,7 +64,15 @@ class App extends React.Component {
     if (r.trim() === "")
       return st.num
   }
-
+  montaObjeto() {
+    let st = this.state
+    let o = {}
+    for (let i in st.calc) {
+      o[i] = st.calc[i]
+    }
+    o[st.calc.length] = this.state.num
+    return o
+  }
 
   render() {
     const { num } = this.state
